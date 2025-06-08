@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createCategory = `-- name: CreateCategory :exec
+const createCategory = `-- name: CreateCategory :execresult
 INSERT INTO categories (id, name, description) VALUES (?, ?, ?)
 `
 
@@ -20,9 +20,8 @@ type CreateCategoryParams struct {
 	Description sql.NullString
 }
 
-func (q *Queries) CreateCategory(ctx context.Context, arg CreateCategoryParams) error {
-	_, err := q.db.ExecContext(ctx, createCategory, arg.ID, arg.Name, arg.Description)
-	return err
+func (q *Queries) CreateCategory(ctx context.Context, arg CreateCategoryParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createCategory, arg.ID, arg.Name, arg.Description)
 }
 
 const getCategory = `-- name: GetCategory :one
