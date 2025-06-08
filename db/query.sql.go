@@ -24,6 +24,14 @@ func (q *Queries) CreateCategory(ctx context.Context, arg CreateCategoryParams) 
 	return q.db.ExecContext(ctx, createCategory, arg.ID, arg.Name, arg.Description)
 }
 
+const deleteCategory = `-- name: DeleteCategory :execresult
+DELETE FROM categories WHERE id = ?
+`
+
+func (q *Queries) DeleteCategory(ctx context.Context, id string) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteCategory, id)
+}
+
 const getCategory = `-- name: GetCategory :one
 SELECT id, name, description FROM categories WHERE id = ?
 `
@@ -60,4 +68,18 @@ func (q *Queries) ListCategories(ctx context.Context) ([]Category, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateCategory = `-- name: UpdateCategory :execresult
+UPDATE categories SET name = ?, description = ? WHERE id = ?
+`
+
+type UpdateCategoryParams struct {
+	Name        string
+	Description sql.NullString
+	ID          string
+}
+
+func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateCategory, arg.Name, arg.Description, arg.ID)
 }
