@@ -52,9 +52,8 @@ func (c *CourseDB) callTx(ctx context.Context, fn func(*db.Queries) error) error
 }
 
 func (c *CourseDB) CreateCourseAndCategory(ctx context.Context, argsCategory CategoryParams, argsCourse CourseParams) error {
-	err := c.callTx(ctx, func(q *db.Queries) error {
-		var err error
-		err = q.CreateCategory(ctx, db.CreateCategoryParams{
+	externalError := c.callTx(ctx, func(q *db.Queries) error {
+		err := q.CreateCategory(ctx, db.CreateCategoryParams{
 			ID:          argsCategory.ID,
 			Name:        argsCategory.Name,
 			Description: argsCategory.Description,
@@ -74,8 +73,8 @@ func (c *CourseDB) CreateCourseAndCategory(ctx context.Context, argsCategory Cat
 		}
 		return nil
 	})
-	if err != nil {
-		return err
+	if externalError != nil {
+		return externalError
 	}
 	return nil
 }
